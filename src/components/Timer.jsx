@@ -134,7 +134,7 @@ const Timer = () => {
       <Box mt={4}>
         <Typography variant="h6">Lap Times</Typography>
         {laps.map((lap, index) => (
-          <Typography key={index} display="flex" alignItems="center">
+          <Typography key={index} display="flex" alignItems="center" justifyContent="center">
             <Typography variant="body1" style={{ marginRight: "10px" }}>
               {`Lap ${index + 1}:`}
             </Typography>
