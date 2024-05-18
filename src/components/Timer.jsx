@@ -1,14 +1,18 @@
 // src/Timer.js
 
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
-  Button,
   TextField,
   CircularProgress,
   Box,
   Typography,
   Grid,
 } from "@mui/material";
+import IconButton from "@mui/material/IconButton"; // Import IconButton component
+import PlayArrowIcon from "@mui/icons-material/PlayArrow"; // Import PlayArrow icon
+import PauseIcon from "@mui/icons-material/Pause"; // Import Pause icon
+import ReplayIcon from "@mui/icons-material/Replay"; // Import Replay icon
+import LapIcon from "@mui/icons-material/Flag";
 
 const Timer = () => {
   const [time, setTime] = useState(0);
@@ -45,7 +49,7 @@ const Timer = () => {
   };
 
   const handleLap = () => {
-    setLaps([...laps, initialTime - time]);
+    setLaps([...laps, { lap: initialTime - time, overall: time }]);
   };
 
   const handleInitialTimeChange = (event) => {
@@ -72,6 +76,39 @@ const Timer = () => {
   return (
     <Box textAlign="center" mt={5} p={2}>
       <Typography variant="h4">Stopwatch</Typography>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        mt={4}
+        position="relative"
+      >
+        <CircularProgress
+          variant="determinate"
+          value={100}
+          size={250}
+          thickness={4}
+          style={{ position: "absolute", color: "rgba(0, 0, 0, 0.1)" }}
+        />
+        <CircularProgress
+          variant="determinate"
+          value={progress}
+          size={250}
+          thickness={4}
+        />
+        <Box
+          top={0}
+          left={0}
+          bottom={0}
+          right={0}
+          position="absolute"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Typography variant="h5">{formatTime(time)}</Typography>
+        </Box>
+      </Box>
       <Grid container spacing={2} justifyContent="center" mt={2}>
         <Grid item xs={12} sm={6} md={4}>
           <TextField
@@ -93,72 +130,35 @@ const Timer = () => {
           />
         </Grid>
       </Grid>
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        mt={4}
-        position="relative"
-      >
-        <CircularProgress
-          variant="determinate"
-          value={100}
-          size={150}
-          thickness={4}
-          style={{ position: "absolute", color: "rgba(0, 0, 0, 0.1)" }}
-        />
-        <CircularProgress
-          variant="determinate"
-          value={progress}
-          size={150}
-          thickness={4}
-        />
-        <Box
-          top={0}
-          left={0}
-          bottom={0}
-          right={0}
-          position="absolute"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Typography variant="h6">{formatTime(time)}</Typography>
-        </Box>
-      </Box>
+
       <Box mt={4}>
         <Typography variant="h6">Lap Times</Typography>
         {laps.map((lap, index) => (
-          <Typography key={index}>{`Lap ${index + 1}: ${formatTime(
-            lap
-          )}`}</Typography>
+          <Typography key={index} display="flex" alignItems="center">
+            <Typography variant="body1" style={{ marginRight: "10px" }}>
+              {`Lap ${index + 1}:`}
+            </Typography>
+            <Typography variant="body1">{formatTime(lap.lap)}</Typography>
+            <Typography variant="body1" style={{ marginLeft: "10px" }}>
+              ({formatTime(lap.overall)})
+            </Typography>
+          </Typography>
         ))}
       </Box>
-      <Box mt={2}>
-        {!isRunning && (
-          <Button variant="contained" onClick={handleStart}>
-            Start
-          </Button>
-        )}
-        {isRunning && (
-          <Button variant="contained" onClick={handlePause}>
-            Pause
-          </Button>
-        )}
-        <Button
-          variant="contained"
-          onClick={handleReset}
-          style={{ marginLeft: "10px" }}
+
+      <Box mt={2} bottom={0}>
+        <IconButton onClick={handleLap} style={{ marginLeft: "10px" }}>
+          <LapIcon />
+        </IconButton>
+        <IconButton
+          onClick={() => (isRunning ? handlePause() : handleStart())}
+          color={isRunning ? "primary" : "secondary"}
         >
-          Reset
-        </Button>
-        <Button
-          variant="contained"
-          onClick={handleLap}
-          style={{ marginLeft: "10px" }}
-        >
-          Lap
-        </Button>
+          {isRunning ? <PauseIcon /> : <PlayArrowIcon />}
+        </IconButton>
+        <IconButton onClick={handleReset} style={{ marginLeft: "10px" }}>
+          <ReplayIcon />
+        </IconButton>
       </Box>
     </Box>
   );
